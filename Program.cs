@@ -49,8 +49,7 @@ namespace QR
             byte[] byteArray = ImageToByteArray(img);
 
             content.Add(new ByteArrayContent(byteArray));
-            content.Headers.ContentDisposition.FileName = "qrcode.jpeg";
-
+            
             request.Content = content;
             
             //the API call response is recorded and then returned to calling location
