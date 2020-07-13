@@ -34,9 +34,6 @@ namespace QR
             var request = new HttpRequestMessage(HttpMethod.Post, "http://api.qrserver.com/v1/read-qr-code/");
 
 
-
-
-
             //var multiPartContent = new MultipartFormDataContent();
 
             using (System.Drawing.Image image = System.Drawing.Image.FromFile("F:\\Work\\QR_Reader\\Resources\\qrcode.jpeg"))
@@ -78,13 +75,13 @@ namespace QR
 
 
         //Method used for local QR file
-        public byte[] ImageToByteArray(System.Drawing.Image imageIn)
-        {
-            using (var ms = new MemoryStream())
-            {
-                imageIn.Save(ms, ImageFormat.Jpeg);
-                return ms.ToArray();
-            }
-        }
+        //public byte[] ImageToByteArray(System.Drawing.Image imageIn)
+        //{
+        //    using (var ms = new MemoryStream())
+        //    {
+        //        imageIn.Save(ms, ImageFormat.Jpeg);
+        //        return ms.ToArray();
+        //    }
+        //}
     }
 }
