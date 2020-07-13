@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -30,34 +31,52 @@ namespace QR
         private async Task<string> Upload()
         {
 
-            // we can use a QR code generated on-the-fly when POST will be sent
-            var getRequestString = "http://api.qrserver.com/v1/create-qr-code/?data=Hi!GoodToHearFromYou!&size=200x200";
+            var request = new HttpRequestMessage(HttpMethod.Post, "http://api.qrserver.com/v1/read-qr-code/");
 
 
-            //var request = new HttpRequestMessage(HttpMethod.Post, "http://api.qrserver.com/v1/read-qr-code/");
-
-            //POST method that can pass the QR generating URL string
-            var request = new HttpRequestMessage(HttpMethod.Post, "http://api.qrserver.com/v1/read-qr-code/?fileurl=" + getRequestString);
 
 
-            //var content = new MultipartFormDataContent();
 
-            ////Use local file 
-            //System.Drawing.Image img = System.Drawing.Image.FromFile("F:\\Work\\QR_Reader\\qrcode.jpeg", true);
-            //byte[] byteArray = ImageToByteArray(img);
+            //var multiPartContent = new MultipartFormDataContent();
 
-            //content.Add(new ByteArrayContent(byteArray));
+            using (System.Drawing.Image image = System.Drawing.Image.FromFile("F:\\Work\\QR_Reader\\Resources\\qrcode.jpeg"))
+            {
 
-            //request.Content = content;
 
-            //the API call response is recorded and then returned to calling location
-            var response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStringAsync();
+                using (MemoryStream m = new MemoryStream())
+                {
 
+
+                    image.Save(m, image.RawFormat);
+                    byte[] byteArray = m.ToArray();
+
+
+                    //Convert byte[] to Base64 String
+                    string base64String = Convert.ToBase64String(byteArray);
+
+                    //use string source
+                    //multiPartContent.Add(new StringContent(base64String));
+
+                    //use byte array source
+                    //multiPartContent.Add(new ByteArrayContent(byteArray));
+
+
+                    //request.Content = multiPartContent;
+
+                    request.Content = new StringContent(base64String, Encoding.UTF8, "multipart/form-data");
+                    request.Content.Headers.ContentLength = base64String.Length;
+                    
+
+                    //the API call response is recorded and then returned to calling location
+                    var response = await client.SendAsync(request);
+
+                    response.EnsureSuccessStatusCode();
+                    return await response.Content.ReadAsStringAsync();
+                }
+            }
         }
 
-      
+
         //Method used for local QR file
         public byte[] ImageToByteArray(System.Drawing.Image imageIn)
         {
